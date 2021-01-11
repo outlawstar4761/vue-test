@@ -27,14 +27,52 @@
       <li><a href="https://vue-loader.vuejs.org" target="_blank" rel="noopener">vue-loader</a></li>
       <li><a href="https://github.com/vuejs/awesome-vue" target="_blank" rel="noopener">awesome-vue</a></li>
     </ul>
+    <div>
+      <button v-on:click="getEmployees">Click to get Employees</button>
+      <ul>
+        <li v-for="employee in employees" :key="employee.id">
+          {{employee.employee_name}}
+        </li>
+      </ul>
+    </div>
+    <div v-for="job in jobs" :key="job.id">
+      <Job>{{job}}</Job>
+    </div>
   </div>
 </template>
 
 <script>
+import Job from './components/Job.vue'
 export default {
   name: 'HelloWorld',
   props: {
     msg: String
+  },
+  computed:{
+    employees(){
+      return this.$store.state.employees;
+    },
+    jobs(){
+      return this.$store.state.jobs;
+    }
+  },
+  methods:{
+    getEmployees(){
+      this.$store.commit('increment')
+      console.log(this.$store.state.count);
+      this.$store.dispatch('getEmployees');
+    },
+    getJobs(){
+      this.$store.dispatch('getJobs');
+    }
+  },
+  components:{
+    Job
+  },
+  created(){
+    //this.getEmployees()
+    // this.$store.dispatch('authenticate',{username:'service_worker',password:'horsefeathers'});
+    this.$store.dispatch('verifyToken',{auth_token:this.$cookies.get('auth_token')}).then(()=>{this.getJobs();});
   }
 }
 </script>
